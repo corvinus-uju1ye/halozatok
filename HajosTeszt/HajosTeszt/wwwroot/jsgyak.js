@@ -1,5 +1,5 @@
 ﻿window.onload = () => {
-    console.log("Codepen-es vicc: Do you know how to comfort a JavaScript bug? You console it! :)")
+    console.log("Codepen-es vicc: How to comfort a JavaScript bug? You console it! :)")
     kirako = function () {
         let hova = document.getElementById("here");
 
