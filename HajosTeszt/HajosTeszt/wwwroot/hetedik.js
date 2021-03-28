@@ -1,27 +1,42 @@
 ﻿window.onload = () => {
     letöltés()
     kérdésMegj(k)
-    k = 0;
 
 }
+
+function letöltés() {
+
+    fetch("/questions.json")
+        .then(r => r.json())
+        .then(d => letöltésBefejeződött(d));
+}
 var kérdések;
+
+function letöltésBefejeződött(d) {
+    console.log("Sikeres letöltés!")
+    console.log(d)
+    kérdések = d;
+    korlát=kérdések.lenght
+}
+
 var korlát;
 var k;
+k = 0;
 document.getElementById("e").click = function () {
-    if (korlát>k && k<=0) {
+    if (korlát > k && k <= 0) {
         k = k + 1
-    } 
+    }
     kérdékérdésMegj(k)
 }
 document.getElementById("v").click = function () {
     if (korlát > k && k <= 0) {
         k = k - 1
-    } 
+    }
     kérdékérdésMegj(k)
 }
 
 document.getElementById("válasz1").click = function () {
-    if ("válasz"+kérdések[k].correctAnswer== "válasz1") {
+    if ("válasz" + kérdések[k].correctAnswer == "válasz1") {
         document.getElementById("válasz1").class('jó');
     }
     else {
@@ -43,21 +58,6 @@ document.getElementById("válasz3").click = function () {
     else {
         document.getElementById("válasz3").class('rossz');
     }
-}
-
-function letöltés() {
-
-    fetch("/questions.json")
-        .then(r => r.json())
-        .then(d => letöltésBefejeződött(d));
-
-
-}
-function letöltésBefejeződött(d) {
-    console.log("Sikeres letöltés!")
-    console.log(d)
-    kérdések = d;
-    korlát=kérdések.lenght
 }
 
 
