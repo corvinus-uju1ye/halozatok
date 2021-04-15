@@ -64,9 +64,9 @@ document.getElementById("válasz3").click = function () {
 
 function kérdésMegj(k) {
 
-    document.getElementById("kérdés_szöveg").innerHTML = kérdések[k].questionText
+    document.getElementById("kérdés_szöveg").innerText = kérdések[k].questionText
     document.getElementById("kép").innerHTML = ` https://szoft1.comeback.hu/hajo/ ${kérdések[k].image} `
-    document.getElementById("válasz1").innerHTML = kérdések[k].answer1
-    document.getElementById("válasz2").innerHTML = kérdések[k].answer2
-    document.getElementById("válasz3").innerHTML = kérdések[k].answer3
+    document.getElementById("válasz1").innerText = kérdések[k].answer1
+    document.getElementById("válasz2").innerText = kérdések[k].answer2
+    document.getElementById("válasz3").innerText = kérdések[k].answer3
 }
