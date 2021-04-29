@@ -5,12 +5,23 @@
     document.getElementById("e").click = előre;
     document.getElementById("v").click = vissza;
     kérdésBetöltés(questionId)
-
+    init();
 }
+
 // 1. lépés
 var kérdések;
 var jóVálasz;
 var questionId = 4;
+// 10.hét
+var hotList = [];           
+var questionsInHotList = 3; 
+
+var displayedQuestion;      
+var numberOfQuestions;      
+var nextQuestion = 1; 
+ //a 2. majd 7 lesz 
+var timeoutHandler;
+      
 
 function letöltés() {
 
@@ -25,7 +36,7 @@ function letöltésBefejeződött(d) {
     console.log(d)
     kérdések = d;
     // ? korlát=kérdések.lenght
-    
+
 }
 
 //var korlát;
@@ -51,19 +62,21 @@ function választás(n) {
     if (n != jóVálasz) {
         document.getElementById(`válasz${n}`).classList.add("rossz");
         document.getElementById(`válasz${jóVálasz}`).classList.add("jó");
+        
     }
     else {
         document.getElementById(`válasz${jóVálasz}`).classList.add("jó");
     }
+    
 }
 
 document.getElementById("válasz1").onclick = function () {
-    if ("válasz" + kérdések[k].correctAnswer == "válasz1") {
-        document.getElementById("válasz1").class('jó');
-    }
-    else {
-        document.getElementById("válasz1").class('rossz');
-    }
+
+    timeoutHandler = setTimeout(előre, 3000);
+
+    document.getElementById(`válasz1`).style.pointerEvents = "none"
+    document.getElementById(`válasz2`).style.pointerEvents = "none"
+    document.getElementById(`válasz3`).style.pointerEvents = "none"
 }
 document.getElementById("válasz2").onclick = function () {
     if ("válasz" + kérdések[k].correctAnswer == "válasz2") {
@@ -72,6 +85,10 @@ document.getElementById("válasz2").onclick = function () {
     else {
         document.getElementById("válasz2").class('rossz');
     }
+    // ide?
+    document.getElementById(`válasz1`).style.pointerEvents = "none"
+    document.getElementById(`válasz2`).style.pointerEvents = "none"
+    document.getElementById(`válasz3`).style.pointerEvents = "none"
 }
 document.getElementById("válasz3").onclick = function () {
     if ("válasz" + kérdések[k].correctAnswer == "válasz3") {
@@ -80,6 +97,10 @@ document.getElementById("válasz3").onclick = function () {
     else {
         document.getElementById("válasz3").class('rossz');
     }
+    // ide?
+    document.getElementById(`válasz1`).style.pointerEvents = "none";
+    document.getElementById(`válasz2`).style.pointerEvents = "none";
+    document.getElementById(`válasz3`).style.pointerEvents = "none";
 }
 
 
@@ -94,7 +115,7 @@ document.getElementById("válasz3").onclick = function () {
 //}
 
 // Új rész Controllerekkel...
-function próba_API () {
+function próba_API() {
 
 }
 
@@ -125,6 +146,8 @@ fetch('/questions/4')
 //}
 
 function kérdésMegjelenítés(kérdés) {
+    let kérdés =localStorage.getItem(hotList)
+    let kérdés = hotList[displayedQuestion].question; 
     if (!kérdés) return;
     console.log(kérdés);
     document.getElementById("kérdés_szöveg").innerText = kérdés.questionText
@@ -145,7 +168,7 @@ function kérdésMegjelenítés(kérdés) {
     document.getElementById("válasz3").classList.remove("jó", "rossz");
 }
 
-function kérdésBetöltés(questionId) {
+function kérdésBetöltés(questionId, destination) {
     fetch(`/questions/${questionId}`)
         .then(response => {
             if (!response.ok) {
@@ -155,22 +178,62 @@ function kérdésBetöltés(questionId) {
                 return response.json()
             }
         })
-        .then(data => kérdésMegjelenítés(data));
+        //.then(data => kérdésMegjelenítés(data))
+            .then(
+            q => {
+                hotList[destination].question = q;
+                hotList[destination].goodAnswers = 0;
+                console.log(`A ${questionNumber}. kérdés letöltve a hot list ${destination}. helyére`)
+                if (displayedQuestion == undefined && destination == 0) {
+                    displayedQuestion = 0;
+                    kérdésMegjelenítés();
+                }
+                    window.localStorage.setItem(hotList)
+            }
+
+// ide?
+    document.getElementById(`válasz1`).style.pointerEvents = "auto";
+    document.getElementById(`válasz2`).style.pointerEvents = "auto";
+    document.getElementById(`válasz3`).style.pointerEvents = "auto";
+
 }
 
 // gombok előre/vissza kezeletlen??? 
+//function előre() {
+//    if (questionId <= d.lenght) {
+//        questionId++;
+//        kérdésBetöltés(questionId)
+//    }
+//    else {
+//        questionId = 0;
+//    }
+//
+//}
 function előre() {
-    if (questionId<= d.lenght) {
-        questionId++;
-        kérdésBetöltés(questionId)
-    }
-    else {
-        questionId = 0;
-    }
-    
+    displayedQuestion++;
+    clearTimeout(timeoutHandler)
+    if (displayedQuestion == questionsInHotList) displayedQuestion = 0;
+    kérdésMegjelenítés()
 }
+// ez hogy tartja benne a tartományban?
 
 function vissza() {
     questionId--;
     kérdésBetöltés(questionId)
+}
+
+function init() {
+    for (var i = 0; i < questionsInHotList; i++) {
+        let q = {
+            question: {},
+            goodAnswers: 0
+        }
+        hotList[i] = q;
+    }
+
+    //Első kérdések letöltése
+    for (var i = 0; i < questionsInHotList; i++) {
+        kérdésBetöltés(nextQuestion, i);
+        nextQuestion++;
+    }
 }

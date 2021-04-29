@@ -41,7 +41,17 @@ namespace HajosTeszt.Controllers
              // A weboldalba kellett?
 
         }
-      
+
+        [HttpGet]
+        [Route("questions/count")]
+        public int M4() //Tetszőleges metódusnév
+        {
+            HajostesztContext context = new HajostesztContext();
+            int kérdésekSzáma = context.Questions.Count();
+
+            return kérdésekSzáma;
+        }
+
 
     }
 }
