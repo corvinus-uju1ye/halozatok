@@ -62,57 +62,50 @@ function választás(n) {
     if (n != jóVálasz) {
         document.getElementById(`válasz${n}`).classList.add("rossz");
         document.getElementById(`válasz${jóVálasz}`).classList.add("jó");
+        hotList[displayedQuestion].goodAnswers0;
         
     }
     else {
         document.getElementById(`válasz${jóVálasz}`).classList.add("jó");
+        hotList[displayedQuestion].goodAnswers++;
+        if (hotList[displayedQuestion].goodAnswers===questionsInHotList) {
+            kérdésBetöltés(nextQuestion, displayedQuestion);
+            nextQuestion++;
+            // kérdéslista_VÉGE?
+        }
     }
-    
+
+    document.getElementById("válaszok").style.pointerEvents = "none";
+    timeoutHandler = setTimeout(előre, 3000);
+    // Vasárnap
+    localStorage.setItem("hotList", JSON.stringify(hotList));
+    localStorage.setItem("displayedQuestion", displayedQuestion);
+    localStorage.setItem("nextQuestion", nextQuestion);
 }
 
 document.getElementById("válasz1").onclick = function () {
 
-    timeoutHandler = setTimeout(előre, 3000);
+    
 
-    document.getElementById(`válasz1`).style.pointerEvents = "none"
-    document.getElementById(`válasz2`).style.pointerEvents = "none"
-    document.getElementById(`válasz3`).style.pointerEvents = "none"
+  
 }
 document.getElementById("válasz2").onclick = function () {
-    if ("válasz" + kérdések[k].correctAnswer == "válasz2") {
-        document.getElementById("válasz2").class('jó');
-    }
-    else {
-        document.getElementById("válasz2").class('rossz');
-    }
-    // ide?
-    document.getElementById(`válasz1`).style.pointerEvents = "none"
-    document.getElementById(`válasz2`).style.pointerEvents = "none"
-    document.getElementById(`válasz3`).style.pointerEvents = "none"
+    
+  
 }
 document.getElementById("válasz3").onclick = function () {
-    if ("válasz" + kérdések[k].correctAnswer == "válasz3") {
-        document.getElementById("válasz3").class('jó');
-    }
-    else {
-        document.getElementById("válasz3").class('rossz');
-    }
-    // ide?
-    document.getElementById(`válasz1`).style.pointerEvents = "none";
-    document.getElementById(`válasz2`).style.pointerEvents = "none";
-    document.getElementById(`válasz3`).style.pointerEvents = "none";
+                                                                    // if ("válasz" + kérdések[k].correctAnswer == "válasz3") {
+                                                                    //     document.getElementById("válasz3").class('jó');
+                                                                    // }
+                                                                    // else {
+                                                                    //     document.getElementById("válasz3").class('rossz');
+                                                                    // }
+   
+                                                                     // document.getElementById(`válasz1`).style.pointerEvents = "none";
+                                                                     // document.getElementById(`válasz2`).style.pointerEvents = "none";
+                                                                     // document.getElementById(`válasz3`).style.pointerEvents = "none";
 }
 
-
-// Az én függvényem átalakítva...rossz?
-//function kérdésMegj(k) {
-//
-//    document.getElementById("kérdés_szöveg").innerText = kérdések[k].questionText
-//    document.getElementById("kép").innerHTML = ` https://szoft1.comeback.hu/hajo/ ${kérdések[k].image} `
-//    document.getElementById("válasz1").innerText = kérdések[k].answer1
-//    document.getElementById("válasz2").innerText = kérdések[k].answer2
-//    document.getElementById("válasz3").innerText = kérdések[k].answer3
-//}
 
 // Új rész Controllerekkel...
 function próba_API() {
@@ -125,28 +118,9 @@ fetch('/questions/4')
     );
 // 2.lépés
 
-//function kérdésMegjelenítés(kérdés) {
-//    console.log(kérdés);
-//    document.getElementById("kérdés_szöveg").innerText = kérdés.questionText
-//    document.getElementById("válasz1").innerText = kérdés.answer1
-//    document.getElementById("válasz2").innerText = kérdés.answer2
-//    document.getElementById("válasz3").innerText = kérdés.answer3
-//    document.getElementById("kép").src = "https://szoft1.comeback.hu/hajo/" + kérdés.image;
-//    // ??? fetch("https://szoft1.comeback.hu/hajo/" + kérdés.image)
-//    //          .then(response => {
-//    //              if (!response.ok) {
-//    //                  console.error()
-//    //              }
-//    //              else {
-//    //                  document.getElementById("kép").src = "https://szoft1.comeback.hu/hajo/" + kérdés.image;
-//    //              }
-//    //          })
-//    
-//    
-//}
 
 function kérdésMegjelenítés(kérdés) {
-    let kérdés =localStorage.getItem(hotList)
+    //let kérdés =localStorage.getItem(hotList)
     let kérdés = hotList[displayedQuestion].question; 
     if (!kérdés) return;
     console.log(kérdés);
@@ -157,15 +131,17 @@ function kérdésMegjelenítés(kérdés) {
     jóVálasz = kérdés.correctAnswer;
     if (kérdés.image) {
         document.getElementById("kép").src = "https://szoft1.comeback.hu/hajo/" + kérdés.image;
-        document.getElementById("kép").classList.remove("rejtett")
+        //document.getElementById("kép").classList.remove("rejtett")
+        document.getElementById("kép").style.display = "block";
     }
     else {
-        document.getElementById("kép").classList.add("rejtett")
+        //document.getElementById("kép").classList.add("rejtett")
+        document.getElementById("kép").style.display = "none";
     }
-    //Nem elfelejeni levenni a színt!!!
-    document.getElementById("válasz1").classList.remove("jó", "rossz");
-    document.getElementById("válasz2").classList.remove("jó", "rossz");
-    document.getElementById("válasz3").classList.remove("jó", "rossz");
+    for (var i = 1; i <= 3; i++) {
+        document.getElementById("válasz"+i).classList.remove("jó","rossz");
+    }
+    document.getElementById("válaszok").style.pointerEvents = "auto";
 }
 
 function kérdésBetöltés(questionId, destination) {
@@ -184,17 +160,17 @@ function kérdésBetöltés(questionId, destination) {
                 hotList[destination].question = q;
                 hotList[destination].goodAnswers = 0;
                 console.log(`A ${questionNumber}. kérdés letöltve a hot list ${destination}. helyére`)
-                if (displayedQuestion == undefined && destination == 0) {
+                if (displayedQuestion === undefined && destination === 0) {
                     displayedQuestion = 0;
                     kérdésMegjelenítés();
                 }
-                    window.localStorage.setItem(hotList)
-            }
+                    //window.localStorage.setItem(hotList)
+            })
 
-// ide?
-    document.getElementById(`válasz1`).style.pointerEvents = "auto";
-    document.getElementById(`válasz2`).style.pointerEvents = "auto";
-    document.getElementById(`válasz3`).style.pointerEvents = "auto";
+    // ide?
+   // document.getElementById(`válasz1`).style.pointerEvents = "auto";
+   // document.getElementById(`válasz2`).style.pointerEvents = "auto";
+   // document.getElementById(`válasz3`).style.pointerEvents = "auto";
 
 }
 
@@ -218,12 +194,15 @@ function előre() {
 // ez hogy tartja benne a tartományban?
 
 function vissza() {
+    clearTimeout(timeoutHandler)
     questionId--;
-    kérdésBetöltés(questionId)
+    if (displayedQuestion < 0) displayedQuestion = questionsInHotList - 1;
+    kérdésMegjelenítés();
+    //kérdésBetöltés(questionId)
 }
 
 function init() {
-    for (var i = 0; i < questionsInHotList; i++) {
+    for (let i = 0; i < questionsInHotList; i++) {
         let q = {
             question: {},
             goodAnswers: 0
@@ -231,9 +210,33 @@ function init() {
         hotList[i] = q;
     }
 
-    //Első kérdések letöltése
-    for (var i = 0; i < questionsInHotList; i++) {
-        kérdésBetöltés(nextQuestion, i);
-        nextQuestion++;
+    
+    fetch("/questions/count")
+        .then(result => result.text())
+    then(ret => { numberOfQuestions = parseInt(ret) })
+
+    document.getElementById("e").addEventListener("click", előre);
+    document.getElementById("v").addEventListener("click", vissza);
+
+
+    if (localStorage.getItem("hotList")) {
+        hotList = JSON.parse(localStorage.getItem("hotList"));
+    }
+    if (localStorage.getItem("displayedQuestion")) {
+        displayedQuestion = parseInt(localStorage.getItem("displayedQuestion"));
+    }
+    if (localStorage.getItem("nextQuestion")) {
+        nextQuestion = parseInt(localStorage.getItem("nextQuestion"));
+    }
+    if (hotList.lenght===0) {
+        //Első kérdések letöltése
+        for (let i = 0; i < questionsInHotList; i++) {
+            kérdésBetöltés(nextQuestion, i);
+            nextQuestion++;
+        }
+    }
+    else {
+        console.log("lokális adatokal dolgozunk tovább...");
+        kérdésMegjelenítés();
     }
 }
